@@ -24,17 +24,30 @@ pub fn main() -> Nil {
   Nil
 }
 
+fn parse_child(parent: Component, child: Component) -> Grid {
+  // we really just want to parse 
+  let content = child.content |> option.unwrap([])
+  let position = #(
+    parent.position.0 + child.position.0,
+    parent.position.1 + child.position.1,
+  )
+  gridify_content(content, position)
+}
+
 fn parse_component(component: Component) -> Nil {
+  // This should really just recursively parse children to grid
+  // the final grid is printed.
   let content = case component.content {
     Some(c) -> c
     _ -> []
+    // this is where we would parse the children
   }
   let dimensions = component.dimensions
-  let grid = gridify_content(content)
+  let grid = gridify_content(content, component.position)
   draw_grid(grid, dimensions)
 }
 
-fn draw_grid(grid: Grid, dimensions: Dimensions) {
+fn draw_grid(grid: Grid, dimensions: Dimensions) -> Nil {
   let #(height, width) = dimensions
   list.range(0, height - 1)
   |> list.map(fn(y) {
@@ -59,15 +72,16 @@ fn draw_grid(grid: Grid, dimensions: Dimensions) {
 
 // This is a way to quickly access elements via a hashmap, since we can't really do this with lists
 // We can likely use some other data type, but this will do for now.
-fn gridify_content(content: List(String)) -> Grid {
+fn gridify_content(content: List(String), position: Dimensions) -> Grid {
+  let #(base_y, base_x) = position
   content
-  |> list.index_map(fn(c, i) {
+  |> list.index_map(fn(c, y) {
     let row_map =
       string.to_graphemes(c)
-      |> list.index_map(fn(cc, i) { #(i, cc) })
+      |> list.index_map(fn(cc, x) { #(x + base_x, cc) })
       |> dict.from_list()
 
-    #(i, row_map)
+    #(y + base_y, row_map)
   })
   |> dict.from_list()
 }
