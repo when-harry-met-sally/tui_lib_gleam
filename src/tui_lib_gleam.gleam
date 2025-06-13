@@ -12,8 +12,8 @@ pub fn main() -> Nil {
 
   let component_child_1 =
     Component(content: text, children: None, dimensions: #(10, 10), position: #(
-      5,
-      5,
+      1,
+      1,
     ))
 
   let component_child_2 =
@@ -28,8 +28,8 @@ pub fn main() -> Nil {
     Component(
       content: None,
       children: Some([component_child_1, component_child_2]),
-      dimensions: #(2, 2),
-      position: #(0, 0),
+      dimensions: #(50, 50),
+      position: #(2, 2),
     )
   core.handle_component(component_main)
 }
