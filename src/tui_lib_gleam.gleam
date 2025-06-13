@@ -2,6 +2,7 @@ import gleam/dict
 import gleam/io
 import gleam/list
 import gleam/option.{None, Some}
+import gleam/result
 import gleam/string
 import types.{type Component, type Dimensions, type Grid, Component}
 
@@ -17,15 +18,31 @@ pub fn main() -> Nil {
   let dimensions = #(3, 30)
   let position = #(0, 0)
 
-  let my_component =
+  let grid =
     Component(content: text, children: None, dimensions:, position:)
+    |> parse_component()
 
-  parse_component(my_component)
+  let lines = grid_to_lines(grid, dimensions)
 
+  draw_lines(lines)
   Nil
 }
 
-fn parse_child(parent: Component, child: Component) -> Grid {
+fn merge_grids(grids: List(Grid)) -> Grid {
+  let leftmost_grid = grids |> list.first() |> result.unwrap(dict.new())
+  grids
+  |> list.fold(leftmost_grid, fn(acc, grid) {
+    let is_leftmost_grid = grid == leftmost_grid
+    case is_leftmost_grid {
+      True -> acc
+      _ -> {
+        dict.combine(leftmost_grid, grid, fn(l_row, _) { l_row })
+      }
+    }
+  })
+}
+
+fn parse_child(child: Component, parent: Component) -> Grid {
   // we really just want to parse 
   let content = child.content |> option.unwrap([])
   let position = #(
@@ -35,40 +52,49 @@ fn parse_child(parent: Component, child: Component) -> Grid {
   gridify_content(content, position)
 }
 
-fn parse_component(component: Component) -> Nil {
+fn parse_component(component: Component) -> Grid {
   // This should really just recursively parse children to grid
   // the final grid is printed.
-  let content = case component.content {
-    Some(c) -> c
-    _ -> []
+  case component.content {
+    Some(c) -> gridify_content(c, component.position)
+    _ ->
+      case component.children {
+        Some([]) -> dict.new()
+        Some(children) -> {
+          let grids =
+            children
+            |> list.map(fn(child) { parse_child(component, child) })
+          merge_grids(grids)
+        }
+        _ -> dict.new()
+      }
     // this is where we would parse the children
   }
-  let dimensions = component.dimensions
-  let grid = gridify_content(content, component.position)
-  draw_grid(grid, dimensions)
 }
 
-fn draw_grid(grid: Grid, dimensions: Dimensions) -> Nil {
+fn grid_to_lines(grid: Grid, dimensions: Dimensions) -> List(String) {
   let #(height, width) = dimensions
   list.range(0, height - 1)
   |> list.map(fn(y) {
-    let row =
-      list.range(0, width - 1)
-      |> list.map(fn(x) {
-        case dict.get(grid, y) {
-          Ok(m) -> {
-            case dict.get(m, x) {
-              Ok(char) -> char
-              _ -> whitespace
-            }
+    list.range(0, width - 1)
+    |> list.map(fn(x) {
+      case dict.get(grid, y) {
+        Ok(m) -> {
+          case dict.get(m, x) {
+            Ok(char) -> char
+            _ -> whitespace
           }
-          _ -> whitespace
         }
-      })
-      |> string.join("")
-    io.println(row)
+        _ -> whitespace
+      }
+    })
+    |> string.join("")
   })
-  Nil
+}
+
+fn draw_lines(lines: List(String)) -> Nil {
+  lines
+  |> list.each(fn(line) { io.println(line) })
 }
 
 // This is a way to quickly access elements via a hashmap, since we can't really do this with lists
