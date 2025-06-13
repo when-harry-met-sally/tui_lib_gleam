@@ -15,7 +15,7 @@ pub fn main() -> Nil {
       "Line 2! My favorite little line", "Like 3, this line isn't as cool!",
       "Line 4",
     ])
-  let dimensions = #(3, 30)
+  let dimensions = #(10, 30)
   let position = #(0, 0)
 
   let grid =
