@@ -25,10 +25,10 @@ pub fn main() -> Nil {
 
   let component_child_2 =
     Component(
-      content: Some(["This is the new one"]),
+      content: Some(["_ _"]),
       children: None,
       dimensions: #(0, 0),
-      position: #(25, 25),
+      position: #(3, 3),
     )
 
   let component_main =
@@ -49,6 +49,7 @@ pub fn main() -> Nil {
   Nil
 }
 
+// Not sure if this is good, but we accept the left most, which takes precidence
 fn merge_grids(grids: List(Grid)) -> Grid {
   let leftmost_grid = grids |> list.first() |> result.unwrap(dict.new())
   grids
@@ -57,11 +58,12 @@ fn merge_grids(grids: List(Grid)) -> Grid {
     case is_leftmost_grid {
       True -> acc
       _ -> {
-        dict.combine(leftmost_grid, grid, fn(l_row, _) { l_row })
+        dict.combine(leftmost_grid, grid, fn(l_row, r_row) {
+          dict.combine(l_row, r_row, fn(l, _) { l })
+        })
       }
     }
   })
-  leftmost_grid
 }
 
 fn parse_child(child: Component, parent: Component) -> Grid {
