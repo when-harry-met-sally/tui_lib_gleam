@@ -19,12 +19,12 @@ pub fn main() -> Nil {
   let my_component =
     Component(content: text, children: None, dimensions:, position:)
 
-  log_component(my_component)
+  parse_component(my_component)
 
   Nil
 }
 
-fn log_component(component: Component) -> Nil {
+fn parse_component(component: Component) -> Nil {
   let content = case component.content {
     Some(c) -> c
     _ -> []
