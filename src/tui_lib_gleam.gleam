@@ -10,19 +10,40 @@ const whitespace = " "
 
 pub fn main() -> Nil {
   let text =
-    option.Some([
+    Some([
       "Hello from tui_lib_gleam, this is pretty cool don't you think!",
       "Line 2! My favorite little line", "Like 3, this line isn't as cool!",
       "Line 4",
     ])
-  let dimensions = #(10, 30)
-  let position = #(0, 0)
+  let screen_dimensions = #(40, 100)
+
+  let component_child_1 =
+    Component(content: text, children: None, dimensions: #(0, 0), position: #(
+      3,
+      3,
+    ))
+
+  let component_child_2 =
+    Component(
+      content: Some(["This is the new one"]),
+      children: None,
+      dimensions: #(0, 0),
+      position: #(25, 25),
+    )
+
+  let component_main =
+    Component(
+      content: None,
+      children: Some([component_child_1, component_child_2]),
+      dimensions: #(10, 30),
+      position: #(0, 0),
+    )
 
   let grid =
-    Component(content: text, children: None, dimensions:, position:)
+    component_main
     |> parse_component()
 
-  let lines = grid_to_lines(grid, dimensions)
+  let lines = grid_to_lines(grid, screen_dimensions)
 
   draw_lines(lines)
   Nil
@@ -40,6 +61,7 @@ fn merge_grids(grids: List(Grid)) -> Grid {
       }
     }
   })
+  leftmost_grid
 }
 
 fn parse_child(child: Component, parent: Component) -> Grid {
@@ -56,14 +78,14 @@ fn parse_component(component: Component) -> Grid {
   // This should really just recursively parse children to grid
   // the final grid is printed.
   case component.content {
-    Some(c) -> gridify_content(c, component.position)
+    Some(text) -> gridify_content(text, component.position)
     _ ->
       case component.children {
         Some([]) -> dict.new()
         Some(children) -> {
           let grids =
             children
-            |> list.map(fn(child) { parse_child(component, child) })
+            |> list.map(fn(child) { parse_child(child, component) })
           merge_grids(grids)
         }
         _ -> dict.new()
