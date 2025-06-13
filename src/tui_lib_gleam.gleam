@@ -11,9 +11,10 @@ pub fn main() -> Nil {
   let text =
     option.Some([
       "Hello from tui_lib_gleam, this is pretty cool don't you think!",
-      "Line 2! My favorite little line", "Like 3, this line isn't as cool",
+      "Line 2! My favorite little line", "Like 3, this line isn't as cool!",
+      "Line 4",
     ])
-  let dimensions = #(10, 30)
+  let dimensions = #(3, 30)
   let position = #(0, 0)
 
   let my_component =
