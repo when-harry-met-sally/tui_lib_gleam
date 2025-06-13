@@ -44,6 +44,8 @@ fn parse_child(child: Component, parent: Component) -> Grid {
     parent.position.0 + child.position.0,
     parent.position.1 + child.position.1,
   )
+
+  // This is how we handle overflow
   let child_dimension_y = case
     { parent.dimensions.0 < position.0 + child.dimensions.0 }
   {
