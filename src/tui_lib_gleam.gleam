@@ -21,14 +21,14 @@ pub fn main() -> Nil {
       content: Some(["_ _"]),
       children: None,
       dimensions: #(5, 5),
-      position: #(3, 3),
+      position: #(0, 0),
     )
 
   let component_main =
     Component(
       content: None,
       children: Some([component_child_1, component_child_2]),
-      dimensions: #(10, 10),
+      dimensions: #(2, 2),
       position: #(0, 0),
     )
   core.handle_component(component_main)

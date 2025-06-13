@@ -40,11 +40,24 @@ fn merge_grids(grids: List(Grid)) -> Grid {
 fn parse_child(child: Component, parent: Component) -> Grid {
   // we really just want to parse 
   let content = child.content |> option.unwrap([])
-  let dimensions = child.dimensions
   let position = #(
     parent.position.0 + child.position.0,
     parent.position.1 + child.position.1,
   )
+  let child_dimension_y = case
+    { parent.dimensions.0 < position.0 + child.dimensions.0 }
+  {
+    True -> parent.dimensions.0 - position.0
+    False -> child.dimensions.0
+  }
+
+  let child_dimension_x = case
+    { parent.dimensions.1 < position.1 + child.dimensions.1 }
+  {
+    True -> parent.dimensions.1 - position.1
+    False -> child.dimensions.1
+  }
+  let dimensions = #(child_dimension_y, child_dimension_x)
   gridify_content(content, position, dimensions)
 }
 
@@ -103,8 +116,6 @@ fn gridify_content(
 ) -> Grid {
   let #(base_y, base_x) = position
   let #(height, width) = dimensions
-
-  echo dimensions
 
   content
   |> list.take(height)
