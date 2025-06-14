@@ -16,7 +16,7 @@ pub fn main() -> Nil {
     Component(
       content: text1,
       children: None,
-      dimensions: #(25, 25),
+      dimensions: #(30, 25),
       position: #(0, 0),
     )
 
@@ -25,7 +25,7 @@ pub fn main() -> Nil {
       content: text2,
       children: None,
       dimensions: #(10, 10),
-      position: #(0, 25),
+      position: #(1, 25),
     )
 
   let component_main =

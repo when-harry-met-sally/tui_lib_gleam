@@ -72,6 +72,10 @@ fn format_text(component: Component, lines: List(String)) -> List(String) {
 }
 
 fn parse_component(parent: Component, position: Dimensions) -> Grid {
+  let new_position = #(
+    position.0 + parent.position.0,
+    position.1 + parent.position.1,
+  )
   // This should really just recursively parse children to grid
   // the final grid is printed.
   case parent.content, parent.children {
@@ -82,21 +86,14 @@ fn parse_component(parent: Component, position: Dimensions) -> Grid {
     //
     Some(text), None ->
       format_text(parent, text)
-      |> gridify_content(parent.position, parent.dimensions)
+      |> gridify_content(new_position, parent.dimensions)
     _, Some([]) -> {
       dict.new()
     }
     _, Some(children) -> {
       let grids =
         children
-        |> list.map(fn(child) {
-          let new_position = #(
-            position.0 + parent.position.0,
-            position.1 + parent.position.1,
-          )
-
-          parse_component(child, new_position)
-        })
+        |> list.map(fn(child) { parse_component(child, new_position) })
       merge_grids(grids)
     }
     // this is where we would parse the children
