@@ -1,8 +1,14 @@
 import core
 import gleam/option.{None, Some}
+import gleam/string
+import gleam_community/ansi
 import types.{Component, Style}
 
 pub fn main() -> Nil {
+  let s = ansi.bg_blue("MILES")
+  echo s
+  let res = string.to_graphemes(s)
+  echo res
   let text1 =
     Some([
       "Hello from tui_lib_gleam, this is pretty cool don't you think!",
@@ -18,7 +24,7 @@ pub fn main() -> Nil {
       children: None,
       dimensions: #(30, 25),
       position: #(0, 0),
-      style: Style(types.Color("red")),
+      style: Style(types.BorderColor("red")),
     )
 
   let component_child_2 =
@@ -27,7 +33,7 @@ pub fn main() -> Nil {
       children: None,
       dimensions: #(10, 10),
       position: #(1, 20),
-      style: Style(types.Color("red")),
+      style: Style(types.BorderColor("red")),
     )
 
   let component_main =
@@ -36,7 +42,7 @@ pub fn main() -> Nil {
       children: Some([component_child_1, component_child_2]),
       dimensions: #(0, 0),
       position: #(0, 0),
-      style: Style(types.Color("red")),
+      style: Style(types.BorderColor("red")),
     )
   core.handle_app(component_main)
 }

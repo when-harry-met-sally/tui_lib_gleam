@@ -5,7 +5,6 @@ import gleam/list
 import gleam/option.{type Option, None, Some}
 import gleam/result
 import gleam/string
-import gleam_community/ansi
 import types.{type Component, type Grid, type XY}
 
 pub fn handle_app(app: Component) -> Nil {

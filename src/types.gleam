@@ -31,5 +31,5 @@ pub type Positioning {
 
 pub type Border {
   // Width(Int)
-  Color(String)
+  BorderColor(String)
 }
