@@ -2,17 +2,19 @@ import constants
 import gleam/dict
 import gleam/io
 import gleam/list
-import gleam/option.{Some}
+import gleam/option.{None, Some}
 import gleam/result
 import gleam/string
 import types.{type Component, type Dimensions, type Grid}
 
-pub fn handle_component(component: Component) -> Nil {
+pub fn handle_component(app: Component) -> Nil {
   let screen_dimensions = #(40, 100)
 
+  let initial_position = #(0, 0)
+
   let grid =
-    component
-    |> parse_component()
+    app
+    |> parse_component(initial_position)
 
   let lines = grid_to_lines(grid, screen_dimensions)
 
@@ -39,7 +41,6 @@ fn merge_grids(grids: List(Grid)) -> Grid {
 
 fn parse_child(child: Component, parent: Component) -> Grid {
   // we really just want to parse 
-  let content = child.content |> option.unwrap([])
   let position = #(
     parent.position.0 + child.position.0,
     parent.position.1 + child.position.1,
@@ -60,26 +61,32 @@ fn parse_child(child: Component, parent: Component) -> Grid {
     False -> child.dimensions.1
   }
   let dimensions = #(child_dimension_y, child_dimension_x)
-  gridify_content(content, position, dimensions)
 }
 
-fn parse_component(component: Component) -> Grid {
+fn parse_component(component: Component, position: Dimensions) -> Grid {
   // This should really just recursively parse children to grid
   // the final grid is printed.
-  case component.content {
-    Some(text) ->
+  case component.content, component.children {
+    // Errors 
+    Some(_), Some(_) ->
+      panic as "Cannot have a component with both children and text content"
+    None, None -> panic as "Component must have children or text content"
+    //
+    Some(text), None ->
       gridify_content(text, component.position, component.dimensions)
-    _ ->
-      case component.children {
-        Some([]) -> dict.new()
-        Some(children) -> {
-          let grids =
-            children
-            |> list.map(fn(child) { parse_child(child, component) })
-          merge_grids(grids)
-        }
-        _ -> dict.new()
-      }
+    _, Some([]) -> {
+      dict.new()
+    }
+    _, Some(children) -> {
+      let grids =
+        children
+        |> list.map(fn(child) {
+          let current_position = 0
+
+          parse_component(child, position)
+        })
+      merge_grids(grids)
+    }
     // this is where we would parse the children
   }
 }
