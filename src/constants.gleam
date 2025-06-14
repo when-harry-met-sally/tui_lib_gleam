@@ -23,5 +23,3 @@ pub const mid_top = "┬"
 pub const mid_bot = "┴"
 
 pub const cross = "┼"
-
-pub const days_in_week = 7

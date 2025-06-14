@@ -32,7 +32,7 @@ fn merge_grids(grids: List(Grid)) -> Grid {
       True -> acc
       _ -> {
         dict.combine(leftmost_grid, grid, fn(l_row, r_row) {
-          dict.combine(l_row, r_row, fn(l, _) { l })
+          dict.combine(l_row, r_row, fn(_, r) { r })
         })
       }
     }

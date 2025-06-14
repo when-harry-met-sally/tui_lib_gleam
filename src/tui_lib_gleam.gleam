@@ -25,7 +25,7 @@ pub fn main() -> Nil {
       content: text2,
       children: None,
       dimensions: #(10, 10),
-      position: #(1, 25),
+      position: #(1, 20),
     )
 
   let component_main =
