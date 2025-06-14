@@ -5,6 +5,7 @@ import gleam/list
 import gleam/option.{type Option, None, Some}
 import gleam/result
 import gleam/string
+import gleam_community/ansi
 import types.{type Component, type Grid, type XY}
 
 pub fn handle_app(app: Component) -> Nil {
@@ -48,26 +49,29 @@ fn format_text(component: Component, lines: List(String)) -> List(String) {
   let inner_width = width - 2
   let inner_lines = list.take(lines, inner_height)
 
+  // TODO: Ansi changes string length
+  let border_color = fn(str) { str }
+
   let rows =
     inner_lines
     |> list.map(fn(row) {
       let text = string.to_graphemes(row) |> list.take(inner_width)
       let whitespace_count = inner_width - list.length(text)
-      constants.column
+      border_color(constants.column)
       <> string.join(text, "")
       <> string.repeat(constants.whitespace, whitespace_count)
-      <> constants.column
+      <> border_color(constants.column)
     })
 
   let top_bar =
-    constants.top_left
+    border_color(constants.top_left)
     <> string.repeat(constants.bar, inner_width)
-    <> constants.top_right
+    <> border_color(constants.top_right)
 
   let bot_bar =
-    constants.bot_left
+    border_color(constants.bot_left)
     <> string.repeat(constants.bar, inner_width)
-    <> constants.bot_right
+    <> border_color(constants.bot_right)
 
   // TODO: Do this differently...
   [[top_bar], rows, [bot_bar]] |> list.flatten()
