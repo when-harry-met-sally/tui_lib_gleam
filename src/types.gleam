@@ -15,3 +15,22 @@ pub type XY =
 
 pub type Grid =
   Dict(Int, Dict(Int, String))
+
+// ---- 
+
+pub type VComponent {
+  VComponent(
+    content: Option(List(String)),
+    children: Option(List(Component)),
+    style: Style,
+  )
+}
+
+pub type Style {
+  Style(position: Option(Positioning))
+}
+
+pub type Positioning {
+  Absolute
+  Relative
+}
