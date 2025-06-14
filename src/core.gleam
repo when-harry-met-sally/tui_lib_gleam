@@ -39,41 +39,41 @@ fn merge_grids(grids: List(Grid)) -> Grid {
   })
 }
 
-fn parse_child(child: Component, parent: Component) -> Grid {
-  // we really just want to parse 
-  let position = #(
-    parent.position.0 + child.position.0,
-    parent.position.1 + child.position.1,
-  )
+// fn parse_child(child: Component, parent: Component) -> Grid {
+//   // we really just want to parse 
+//   let position = #(
+//     parent.position.0 + child.position.0,
+//     parent.position.1 + child.position.1,
+//   )
+//
+//   // This is how we handle overflow
+//   let child_dimension_y = case
+//     { parent.dimensions.0 < position.0 + child.dimensions.0 }
+//   {
+//     True -> parent.dimensions.0 - position.0
+//     False -> child.dimensions.0
+//   }
+//
+//   let child_dimension_x = case
+//     { parent.dimensions.1 < position.1 + child.dimensions.1 }
+//   {
+//     True -> parent.dimensions.1 - position.1
+//     False -> child.dimensions.1
+//   }
+//   let dimensions = #(child_dimension_y, child_dimension_x)
+// }
 
-  // This is how we handle overflow
-  let child_dimension_y = case
-    { parent.dimensions.0 < position.0 + child.dimensions.0 }
-  {
-    True -> parent.dimensions.0 - position.0
-    False -> child.dimensions.0
-  }
-
-  let child_dimension_x = case
-    { parent.dimensions.1 < position.1 + child.dimensions.1 }
-  {
-    True -> parent.dimensions.1 - position.1
-    False -> child.dimensions.1
-  }
-  let dimensions = #(child_dimension_y, child_dimension_x)
-}
-
-fn parse_component(component: Component, position: Dimensions) -> Grid {
+fn parse_component(parent: Component, position: Dimensions) -> Grid {
   // This should really just recursively parse children to grid
   // the final grid is printed.
-  case component.content, component.children {
+  case parent.content, parent.children {
     // Errors 
     Some(_), Some(_) ->
       panic as "Cannot have a component with both children and text content"
     None, None -> panic as "Component must have children or text content"
     //
     Some(text), None ->
-      gridify_content(text, component.position, component.dimensions)
+      gridify_content(text, parent.position, parent.dimensions)
     _, Some([]) -> {
       dict.new()
     }
@@ -81,9 +81,12 @@ fn parse_component(component: Component, position: Dimensions) -> Grid {
       let grids =
         children
         |> list.map(fn(child) {
-          let current_position = 0
+          let new_position = #(
+            position.0 + parent.position.0,
+            position.1 + parent.position.1,
+          )
 
-          parse_component(child, position)
+          parse_component(child, new_position)
         })
       merge_grids(grids)
     }
