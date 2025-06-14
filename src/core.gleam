@@ -49,8 +49,12 @@ fn format_text(component: Component, lines: List(String)) -> List(String) {
   let rows =
     inner_lines
     |> list.map(fn(row) {
-      let r = string.to_graphemes(row) |> list.take(inner_width)
-      constants.column <> string.join(r, "") <> constants.column
+      let text = string.to_graphemes(row) |> list.take(inner_width)
+      let whitespace_count = inner_width - list.length(text)
+      constants.column
+      <> string.join(text, "")
+      <> string.repeat(constants.whitespace, whitespace_count)
+      <> constants.column
     })
 
   let top_bar =
