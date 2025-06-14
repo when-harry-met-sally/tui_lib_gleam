@@ -20,11 +20,16 @@ pub type Grid =
 // ---- 
 
 pub type Style {
-  Style(positioning: Positioning)
+  Style(border: Border)
 }
 
 pub type Positioning {
   Absolute(XY)
   Relative(XY)
   Static
+}
+
+pub type Border {
+  // Width(Int)
+  Color(String)
 }

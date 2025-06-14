@@ -18,7 +18,7 @@ pub fn main() -> Nil {
       children: None,
       dimensions: #(30, 25),
       position: #(0, 0),
-      style: Style(types.Static),
+      style: Style(types.Color("red")),
     )
 
   let component_child_2 =
@@ -27,7 +27,7 @@ pub fn main() -> Nil {
       children: None,
       dimensions: #(10, 10),
       position: #(1, 20),
-      style: Style(types.Static),
+      style: Style(types.Color("red")),
     )
 
   let component_main =
@@ -36,7 +36,7 @@ pub fn main() -> Nil {
       children: Some([component_child_1, component_child_2]),
       dimensions: #(0, 0),
       position: #(0, 0),
-      style: Style(types.Static),
+      style: Style(types.Color("red")),
     )
   core.handle_app(component_main)
 }
