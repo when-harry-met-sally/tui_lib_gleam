@@ -35,5 +35,5 @@ pub fn main() -> Nil {
       dimensions: #(0, 0),
       position: #(0, 0),
     )
-  core.handle_component(component_main)
+  core.handle_app(component_main)
 }

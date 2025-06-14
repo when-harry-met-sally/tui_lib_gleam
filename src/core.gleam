@@ -2,24 +2,26 @@ import constants
 import gleam/dict
 import gleam/io
 import gleam/list
-import gleam/option.{None, Some}
+import gleam/option.{type Option, None, Some}
 import gleam/result
 import gleam/string
 import types.{type Component, type Dimensions, type Grid}
 
-pub fn handle_component(app: Component) -> Nil {
+pub fn handle_app(app: Component) -> Nil {
   let screen_dimensions = #(40, 100)
 
   let initial_position = #(0, 0)
 
-  let grid =
-    app
-    |> parse_component(initial_position)
+  let grid = parse_app(app, initial_position)
 
   let lines = grid_to_lines(grid, screen_dimensions)
 
   draw_lines(lines)
   Nil
+}
+
+fn parse_app(app: Component, position: Dimensions) -> Grid {
+  parse_component(None, app, position)
 }
 
 // Not sure if this is good, but we accept the left most, which takes precidence
@@ -40,7 +42,7 @@ fn merge_grids(grids: List(Grid)) -> Grid {
 }
 
 fn format_text(component: Component, lines: List(String)) -> List(String) {
-  let #(height, width) = component.dimensions
+  let #(width, height) = component.dimensions
 
   let inner_height = height - 2
   let inner_width = width - 2
@@ -71,7 +73,15 @@ fn format_text(component: Component, lines: List(String)) -> List(String) {
   [[top_bar], rows, [bot_bar]] |> list.flatten()
 }
 
-fn parse_component(component: Component, position: Dimensions) -> Grid {
+fn parse_component(
+  parent: Option(Component),
+  component: Component,
+  position: Dimensions,
+) -> Grid {
+  // TODO: Overflow issue
+  let max_dimensions = case parent {
+    _ -> component.dimensions
+  }
   let new_position = #(
     position.0 + component.position.0,
     position.1 + component.position.1,
@@ -86,14 +96,16 @@ fn parse_component(component: Component, position: Dimensions) -> Grid {
     //
     Some(text), None ->
       format_text(component, text)
-      |> gridify_content(new_position, component.dimensions)
+      |> gridify_content(new_position, max_dimensions)
     _, Some([]) -> {
       dict.new()
     }
     _, Some(children) -> {
       let grids =
         children
-        |> list.map(fn(child) { parse_component(child, new_position) })
+        |> list.map(fn(child) {
+          parse_component(Some(component), child, new_position)
+        })
       merge_grids(grids)
     }
     // this is where we would parse the children
@@ -105,7 +117,7 @@ fn parse_component(component: Component, position: Dimensions) -> Grid {
 // }
 
 fn grid_to_lines(grid: Grid, dimensions: Dimensions) -> List(String) {
-  let #(height, width) = dimensions
+  let #(width, height) = dimensions
   list.range(0, height - 1)
   |> list.map(fn(y) {
     list.range(0, width - 1)
@@ -137,7 +149,7 @@ fn gridify_content(
   dimensions: Dimensions,
 ) -> Grid {
   let #(base_y, base_x) = position
-  let #(height, width) = dimensions
+  let #(width, height) = dimensions
 
   content
   |> list.take(height)
