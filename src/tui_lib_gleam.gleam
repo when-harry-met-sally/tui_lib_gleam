@@ -1,14 +1,29 @@
 import core
+import gleam/dict.{type Dict}
+import gleam/list
 import gleam/option.{None, Some}
 import gleam/string
 import gleam_community/ansi
 import types.{Component, Style}
 
+const ansi_escape = "\u{001B}"
+
 pub fn main() -> Nil {
   let s = ansi.bg_blue("MILES")
-  echo s
-  let res = string.to_graphemes(s)
-  echo res
+  let graphemes = string.to_graphemes(s)
+  echo "graphemes"
+  echo graphemes
+  echo "---------"
+  echo parse_ansi(graphemes)
+  Nil
+}
+
+// We need to iterate through this, building a dictionary of indexes for the string, and ansi codes that apply to it.
+fn parse_ansi(data: List(String)) {
+  todo
+}
+
+pub fn tui() {
   let text1 =
     Some([
       "Hello from tui_lib_gleam, this is pretty cool don't you think!",
