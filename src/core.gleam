@@ -104,6 +104,7 @@ fn parse_component(
       let grids =
         children
         |> list.map(fn(child) {
+          // for flow sizing, we probably need to account for the sizing here, with an accumulator, adding the dimensions of the child.
           parse_component(Some(component), child, new_position)
         })
       merge_grids(grids)
