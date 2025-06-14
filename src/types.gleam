@@ -5,12 +5,12 @@ pub type Component {
   Component(
     content: Option(List(String)),
     children: Option(List(Component)),
-    dimensions: Dimensions,
-    position: Dimensions,
+    dimensions: XY,
+    position: XY,
   )
 }
 
-pub type Dimensions =
+pub type XY =
   #(Int, Int)
 
 pub type Grid =

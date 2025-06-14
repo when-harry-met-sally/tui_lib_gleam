@@ -5,10 +5,10 @@ import gleam/list
 import gleam/option.{type Option, None, Some}
 import gleam/result
 import gleam/string
-import types.{type Component, type Dimensions, type Grid}
+import types.{type Component, type Grid, type XY}
 
 pub fn handle_app(app: Component) -> Nil {
-  let screen_dimensions = #(40, 100)
+  let screen_dimensions = #(40, 40)
 
   let initial_position = #(0, 0)
 
@@ -20,7 +20,7 @@ pub fn handle_app(app: Component) -> Nil {
   Nil
 }
 
-fn parse_app(app: Component, position: Dimensions) -> Grid {
+fn parse_app(app: Component, position: XY) -> Grid {
   parse_component(None, app, position)
 }
 
@@ -76,7 +76,7 @@ fn format_text(component: Component, lines: List(String)) -> List(String) {
 fn parse_component(
   parent: Option(Component),
   component: Component,
-  position: Dimensions,
+  position: XY,
 ) -> Grid {
   // TODO: Overflow issue
   let max_dimensions = case parent {
@@ -116,7 +116,7 @@ fn parse_component(
 //
 // }
 
-fn grid_to_lines(grid: Grid, dimensions: Dimensions) -> List(String) {
+fn grid_to_lines(grid: Grid, dimensions: XY) -> List(String) {
   let #(width, height) = dimensions
   list.range(0, height - 1)
   |> list.map(fn(y) {
@@ -143,11 +143,7 @@ fn draw_lines(lines: List(String)) -> Nil {
 
 // This is a way to quickly access elements via a hashmap, since we can't really do this with lists
 // We can likely use some other data type, but this will do for now.
-fn gridify_content(
-  content: List(String),
-  position: Dimensions,
-  dimensions: Dimensions,
-) -> Grid {
+fn gridify_content(content: List(String), position: XY, dimensions: XY) -> Grid {
   let #(base_y, base_x) = position
   let #(width, height) = dimensions
 
