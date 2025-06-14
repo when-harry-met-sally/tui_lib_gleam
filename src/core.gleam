@@ -71,22 +71,22 @@ fn format_text(component: Component, lines: List(String)) -> List(String) {
   [[top_bar], rows, [bot_bar]] |> list.flatten()
 }
 
-fn parse_component(parent: Component, position: Dimensions) -> Grid {
+fn parse_component(component: Component, position: Dimensions) -> Grid {
   let new_position = #(
-    position.0 + parent.position.0,
-    position.1 + parent.position.1,
+    position.0 + component.position.0,
+    position.1 + component.position.1,
   )
   // This should really just recursively parse children to grid
   // the final grid is printed.
-  case parent.content, parent.children {
+  case component.content, component.children {
     // Errors 
     Some(_), Some(_) ->
       panic as "Cannot have a component with both children and text content"
     None, None -> panic as "Component must have children or text content"
     //
     Some(text), None ->
-      format_text(parent, text)
-      |> gridify_content(new_position, parent.dimensions)
+      format_text(component, text)
+      |> gridify_content(new_position, component.dimensions)
     _, Some([]) -> {
       dict.new()
     }
@@ -99,6 +99,10 @@ fn parse_component(parent: Component, position: Dimensions) -> Grid {
     // this is where we would parse the children
   }
 }
+
+// fn alter_dimensions(parent: Component, child: Component) {
+//
+// }
 
 fn grid_to_lines(grid: Grid, dimensions: Dimensions) -> List(String) {
   let #(height, width) = dimensions

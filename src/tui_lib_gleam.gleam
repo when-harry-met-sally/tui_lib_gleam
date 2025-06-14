@@ -32,7 +32,7 @@ pub fn main() -> Nil {
     Component(
       content: None,
       children: Some([component_child_1, component_child_2]),
-      dimensions: #(50, 50),
+      dimensions: #(0, 0),
       position: #(0, 0),
     )
   core.handle_component(component_main)
