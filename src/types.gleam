@@ -7,6 +7,7 @@ pub type Component {
     children: Option(List(Component)),
     dimensions: XY,
     position: XY,
+    style: Style,
   )
 }
 
@@ -18,19 +19,12 @@ pub type Grid =
 
 // ---- 
 
-pub type VComponent {
-  VComponent(
-    content: Option(List(String)),
-    children: Option(List(Component)),
-    style: Style,
-  )
-}
-
 pub type Style {
-  Style(position: Option(Positioning))
+  Style(positioning: Positioning)
 }
 
 pub type Positioning {
-  Absolute
-  Relative
+  Absolute(XY)
+  Relative(XY)
+  Static
 }
