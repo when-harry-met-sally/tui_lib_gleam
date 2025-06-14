@@ -39,29 +39,33 @@ fn merge_grids(grids: List(Grid)) -> Grid {
   })
 }
 
-// fn parse_child(child: Component, parent: Component) -> Grid {
-//   // we really just want to parse 
-//   let position = #(
-//     parent.position.0 + child.position.0,
-//     parent.position.1 + child.position.1,
-//   )
-//
-//   // This is how we handle overflow
-//   let child_dimension_y = case
-//     { parent.dimensions.0 < position.0 + child.dimensions.0 }
-//   {
-//     True -> parent.dimensions.0 - position.0
-//     False -> child.dimensions.0
-//   }
-//
-//   let child_dimension_x = case
-//     { parent.dimensions.1 < position.1 + child.dimensions.1 }
-//   {
-//     True -> parent.dimensions.1 - position.1
-//     False -> child.dimensions.1
-//   }
-//   let dimensions = #(child_dimension_y, child_dimension_x)
-// }
+fn format_text(component: Component, lines: List(String)) -> List(String) {
+  let #(height, width) = component.dimensions
+
+  let inner_height = height - 2
+  let inner_width = width - 2
+  let inner_lines = list.take(lines, inner_height)
+
+  let rows =
+    inner_lines
+    |> list.map(fn(row) {
+      let r = string.to_graphemes(row) |> list.take(inner_width)
+      constants.column <> string.join(r, "") <> constants.column
+    })
+
+  let top_bar =
+    constants.top_left
+    <> string.repeat(constants.bar, inner_width)
+    <> constants.top_right
+
+  let bot_bar =
+    constants.bot_left
+    <> string.repeat(constants.bar, inner_width)
+    <> constants.bot_right
+
+  // TODO: Do this differently...
+  [[top_bar], rows, [bot_bar]] |> list.flatten()
+}
 
 fn parse_component(parent: Component, position: Dimensions) -> Grid {
   // This should really just recursively parse children to grid
@@ -73,7 +77,8 @@ fn parse_component(parent: Component, position: Dimensions) -> Grid {
     None, None -> panic as "Component must have children or text content"
     //
     Some(text), None ->
-      gridify_content(text, parent.position, parent.dimensions)
+      format_text(parent, text)
+      |> gridify_content(parent.position, parent.dimensions)
     _, Some([]) -> {
       dict.new()
     }
