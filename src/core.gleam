@@ -122,9 +122,9 @@ fn parse_component(
 
 fn grid_to_lines(grid: Grid, dimensions: XY) -> List(String) {
   let #(width, height) = dimensions
-  list.range(0, height - 1)
+  list.range(0, height)
   |> list.map(fn(y) {
-    list.range(0, width - 1)
+    list.range(0, width)
     |> list.map(fn(x) {
       case dict.get(grid, y) {
         Ok(m) -> {
